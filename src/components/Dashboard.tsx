@@ -1,11 +1,14 @@
 import { useMemo, useState } from 'react'
+import { useRepoActions } from '../hooks/useRepoActions'
 import { useRepos } from '../hooks/useRepos'
 import { DEFAULT_FILTERS, defaultDesc, filterRepos, sortRepos, type Sort, type SortKey } from '../lib/filter'
 import { Filters } from './Filters'
+import { RepoActions } from './RepoActions'
 import { RepoTable } from './RepoTable'
 
 export function Dashboard() {
   const { data: repos, isPending, error, refetch, isFetching } = useRepos()
+  const { perform, dialog } = useRepoActions()
   const [filters, setFilters] = useState(DEFAULT_FILTERS)
   const [sort, setSort] = useState<Sort>({ key: 'pushedAt', desc: true })
 
@@ -48,7 +51,13 @@ export function Dashboard() {
           </button>
         </div>
       </div>
-      <RepoTable repos={visible} sort={sort} onSort={onSort} />
+      <RepoTable
+        repos={visible}
+        sort={sort}
+        onSort={onSort}
+        renderActions={(repo) => <RepoActions repo={repo} onAction={perform} />}
+      />
+      {dialog}
     </div>
   )
 }

@@ -54,10 +54,12 @@ export function RepoTable({
   repos,
   sort,
   onSort,
+  renderActions,
 }: {
   repos: Repo[]
   sort: Sort
   onSort: (key: SortKey) => void
+  renderActions: (repo: Repo) => React.ReactNode
 }) {
   const header = { sort, onSort }
   return (
@@ -74,6 +76,9 @@ export function RepoTable({
             <SortHeader label="Created" sortKey="createdAt" {...header} />
             <SortHeader label="Last push" sortKey="pushedAt" {...header} />
             <SortHeader label="Updated" sortKey="updatedAt" {...header} />
+            <th className="px-3 py-2">
+              <span className="sr-only">Actions</span>
+            </th>
           </tr>
         </thead>
         <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
@@ -117,6 +122,7 @@ export function RepoTable({
               <DateCell iso={repo.createdAt} />
               <DateCell iso={repo.pushedAt} />
               <DateCell iso={repo.updatedAt} />
+              <td className="px-3 py-2">{renderActions(repo)}</td>
             </tr>
           ))}
         </tbody>
