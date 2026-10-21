@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { Dashboard } from './components/Dashboard'
+import { Layout } from './components/Layout'
 import { TokenGate } from './components/TokenGate'
 import { SessionProvider } from './lib/session'
 import { clearToken, loadToken, saveToken, verifyToken, type Session } from './lib/token'
@@ -45,9 +46,9 @@ export default function App() {
 
   return (
     <SessionProvider session={session} signOut={signOut}>
-      <main className="mx-auto max-w-7xl p-6">
+      <Layout>
         <Dashboard />
-      </main>
+      </Layout>
     </SessionProvider>
   )
 }
