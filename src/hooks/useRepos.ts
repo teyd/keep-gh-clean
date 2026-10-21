@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { GitHub } from '../lib/github'
 import { useSession } from '../lib/session'
@@ -18,11 +19,16 @@ export function reposKey(login: string) {
 
 export function useRepos() {
   const { gh, viewer } = useSession()
-  return useQuery({
+  const [progress, setProgress] = useState<{ loaded: number; total: number } | null>(null)
+  const query = useQuery({
     queryKey: reposKey(viewer.login),
-    queryFn: () => fetchRepos(gh),
+    queryFn: async () => {
+      setProgress(null)
+      return fetchRepos(gh, (loaded, total) => setProgress({ loaded, total }))
+    },
     staleTime: 5 * 60_000,
   })
+  return { ...query, progress }
 }
 
 export function useRepoDetail(repo: Repo) {

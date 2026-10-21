@@ -10,7 +10,7 @@ import { RepoDetail } from './RepoDetail'
 import { RepoTable } from './RepoTable'
 
 export function Dashboard() {
-  const { data: repos, isPending, error, refetch, isFetching } = useRepos()
+  const { data: repos, isPending, error, refetch, isFetching, progress } = useRepos()
   const { perform, dialog } = useRepoActions()
   const bulk = useBulkActions()
   const [filters, setFilters] = useState(DEFAULT_FILTERS)
@@ -49,7 +49,13 @@ export function Dashboard() {
     setSelectedIds(checked ? new Set(visible.map((r) => r.id)) : new Set())
   }
 
-  if (isPending) return <p className="py-12 text-center text-sm text-zinc-500">Loading repositories…</p>
+  if (isPending) {
+    return (
+      <p className="py-12 text-center text-sm text-zinc-500">
+        Loading repositories…{progress && ` ${progress.loaded} of ${progress.total}`}
+      </p>
+    )
+  }
   if (error) {
     return (
       <div className="py-12 text-center text-sm">

@@ -36,6 +36,7 @@ const REPO_LIST = /* GraphQL */ `
         ownerAffiliations: [OWNER, COLLABORATOR, ORGANIZATION_MEMBER]
         orderBy: { field: PUSHED_AT, direction: DESC }
       ) {
+        totalCount
         pageInfo { hasNextPage endCursor }
         nodes {
           id
@@ -90,6 +91,7 @@ type RepoNode = {
 type RepoListResponse = {
   viewer: {
     repositories: {
+      totalCount: number
       pageInfo: { hasNextPage: boolean; endCursor: string | null }
       nodes: (RepoNode | null)[]
     }
@@ -123,8 +125,12 @@ function toRepo(n: RepoNode): Repo {
 }
 
 /** Every repo the viewer can administer: their own, plus org repos where they're an admin. */
-export async function fetchRepos(gh: GitHub): Promise<Repo[]> {
+export async function fetchRepos(
+  gh: GitHub,
+  onProgress?: (loaded: number, total: number) => void,
+): Promise<Repo[]> {
   const repos: Repo[] = []
+  let loaded = 0
   let after: string | null = null
   do {
     const data: RepoListResponse = await graphql<RepoListResponse>(gh, REPO_LIST, { after })
@@ -132,6 +138,8 @@ export async function fetchRepos(gh: GitHub): Promise<Repo[]> {
     for (const node of page.nodes) {
       if (node && node.viewerPermission === 'ADMIN') repos.push(toRepo(node))
     }
+    loaded += page.nodes.length
+    onProgress?.(loaded, page.totalCount)
     after = page.pageInfo.hasNextPage ? page.pageInfo.endCursor : null
   } while (after)
   return repos
