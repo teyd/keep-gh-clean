@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useRepoActions } from '../hooks/useRepoActions'
 import { useRepos } from '../hooks/useRepos'
 import { DEFAULT_FILTERS, defaultDesc, filterRepos, sortRepos, type Sort, type SortKey } from '../lib/filter'
 import { Filters } from './Filters'
 import { RepoActions } from './RepoActions'
+import { RepoDetail } from './RepoDetail'
 import { RepoTable } from './RepoTable'
 
 export function Dashboard() {
@@ -11,6 +12,10 @@ export function Dashboard() {
   const { perform, dialog } = useRepoActions()
   const [filters, setFilters] = useState(DEFAULT_FILTERS)
   const [sort, setSort] = useState<Sort>({ key: 'pushedAt', desc: true })
+  const [openId, setOpenId] = useState<string | null>(null)
+  // Looked up from the live list so the drawer reflects actions and closes when the repo is deleted.
+  const openRepo = repos?.find((r) => r.id === openId)
+  const closeDetail = useCallback(() => setOpenId(null), [])
 
   const owners = useMemo(() => [...new Set(repos?.map((r) => r.owner))].sort(), [repos])
   const languages = useMemo(
@@ -56,7 +61,9 @@ export function Dashboard() {
         sort={sort}
         onSort={onSort}
         renderActions={(repo) => <RepoActions repo={repo} onAction={perform} />}
+        onOpen={(repo) => setOpenId(repo.id)}
       />
+      {openRepo && <RepoDetail repo={openRepo} onClose={closeDetail} onAction={perform} />}
       {dialog}
     </div>
   )

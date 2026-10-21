@@ -55,11 +55,13 @@ export function RepoTable({
   sort,
   onSort,
   renderActions,
+  onOpen,
 }: {
   repos: Repo[]
   sort: Sort
   onSort: (key: SortKey) => void
   renderActions: (repo: Repo) => React.ReactNode
+  onOpen: (repo: Repo) => void
 }) {
   const header = { sort, onSort }
   return (
@@ -83,11 +85,21 @@ export function RepoTable({
         </thead>
         <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
           {repos.map((repo) => (
-            <tr key={repo.id} className={repo.archived ? 'opacity-60' : ''}>
+            <tr
+              key={repo.id}
+              onClick={() => onOpen(repo)}
+              className={`cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 ${repo.archived ? 'opacity-60' : ''}`}
+            >
               <td className="max-w-md px-3 py-2">
                 <div className="flex items-center gap-2">
                   <img src={repo.ownerAvatar} alt="" className="size-5 rounded-full" />
-                  <a href={repo.url} target="_blank" rel="noreferrer" className="truncate font-medium hover:underline">
+                  <a
+                    href={repo.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="truncate font-medium hover:underline"
+                  >
                     <span className="text-zinc-500">{repo.owner}/</span>
                     {repo.name}
                   </a>
