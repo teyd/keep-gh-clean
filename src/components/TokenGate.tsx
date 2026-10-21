@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ENV } from 'varlock/env'
 import { TOKEN_URL, verifyToken, type Session } from '../lib/token'
 
 export function TokenGate({
@@ -71,6 +72,11 @@ export function TokenGate({
         <p>
           Your token stays in this browser and is only sent to <code>api.github.com</code>. There is
           no server and no analytics. Without “remember”, it's cleared when you close the tab.
+        </p>
+        <p>
+          <a href={ENV.SOURCE_URL} target="_blank" rel="noreferrer" className="underline">
+            View the source code
+          </a>
         </p>
       </div>
     </div>

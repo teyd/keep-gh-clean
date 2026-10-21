@@ -1,6 +1,8 @@
 import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import { varlockVitePlugin } from '@varlock/vite-integration'
+import { ENV } from 'varlock/env'
 
 // The token never leaves the browser except to api.github.com. Only applied to
 // production builds because the dev server needs inline scripts and websockets.
@@ -29,6 +31,6 @@ function csp(): Plugin {
 }
 
 export default defineConfig({
-  base: process.env.BASE_PATH ?? '/',
-  plugins: [react(), tailwindcss(), csp()],
+  base: ENV.BASE_PATH,
+  plugins: [varlockVitePlugin(), react(), tailwindcss(), csp()],
 })
