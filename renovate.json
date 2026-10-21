@@ -1,0 +1,39 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "schedule": ["before 6am on monday"],
+  "minimumReleaseAge": "3 days",
+  "platformAutomerge": false,
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true
+  },
+  "packageRules": [
+    {
+      "description": "Merge non-breaking updates once CI passes",
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true
+    },
+    {
+      "description": "vite is aliased to Vite+'s bundled core in the pnpm catalog",
+      "matchPackageNames": ["vite-plus", "@voidzero-dev/vite-plus-core"],
+      "groupName": "Vite+"
+    },
+    {
+      "matchPackageNames": ["@octokit/**"],
+      "groupName": "Octokit"
+    },
+    {
+      "matchPackageNames": ["@tanstack/**"],
+      "groupName": "TanStack"
+    },
+    {
+      "matchPackageNames": ["tailwindcss", "@tailwindcss/**"],
+      "groupName": "Tailwind CSS"
+    },
+    {
+      "matchPackageNames": ["varlock", "@varlock/**"],
+      "groupName": "varlock"
+    }
+  ]
+}
