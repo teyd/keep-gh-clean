@@ -4,8 +4,13 @@ See all your GitHub repositories in one table, then change visibility, archive o
 
 **→ [teyd.github.io/keep-gh-clean](https://teyd.github.io/keep-gh-clean/)**
 
-<img width="3200" height="2680" alt="keep-gh-clean-detail" src="https://github.com/user-attachments/assets/ec8b9c6b-8344-4a08-9ce4-72d7ae7b7f19" />
-<img width="3200" height="2680" alt="keep-gh-clean-table" src="https://github.com/user-attachments/assets/a15a5362-de4d-4bb2-a6a5-ffae2eb7f41e" />
+<img alt="Repository table with three repos selected for a bulk action" src="https://github.com/user-attachments/assets/a15a5362-de4d-4bb2-a6a5-ffae2eb7f41e" />
+
+<details>
+<summary>More screenshots</summary>
+<br />
+<img alt="Detail drawer with commits, contributors and metadata" src="https://github.com/user-attachments/assets/ec8b9c6b-8344-4a08-9ce4-72d7ae7b7f19" />
+</details>
 
 ## Features
 
