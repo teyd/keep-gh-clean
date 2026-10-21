@@ -10,6 +10,9 @@ See all your GitHub repositories in one table, then change visibility, archive o
 - One-click public ⇄ private and archive ⇄ unarchive with undo; delete requires typing the repo name
 - Bulk actions on selected repos, with progress and a per-repo failure summary
 
+<img width="3200" height="2680" alt="keep-gh-clean-detail" src="https://github.com/user-attachments/assets/ec8b9c6b-8344-4a08-9ce4-72d7ae7b7f19" />
+<img width="3200" height="2680" alt="keep-gh-clean-table" src="https://github.com/user-attachments/assets/a15a5362-de4d-4bb2-a6a5-ffae2eb7f41e" />
+
 ## How it works
 
 It's a static site with no backend. You paste a GitHub token and the browser talks to `api.github.com` directly.
