@@ -18,7 +18,7 @@ let rateSnapshot: RateLimit[] = []
 const listeners = new Set<Listener>()
 
 export const rateLimitStore = {
-  subscribe(listener: Listener) {
+  subscribe: (listener: Listener) => {
     listeners.add(listener)
     return () => listeners.delete(listener)
   },
@@ -42,7 +42,10 @@ function trackRateLimit(headers: Headers | undefined) {
 function friendlyMessage(error: RequestError): string {
   const headers = error.response?.headers
   if (error.status === 401) return 'Token is invalid or expired.'
-  if ((error.status === 403 || error.status === 429) && headers?.['x-ratelimit-remaining'] === '0') {
+  if (
+    (error.status === 403 || error.status === 429) &&
+    headers?.['x-ratelimit-remaining'] === '0'
+  ) {
     const reset = new Date(Number(headers['x-ratelimit-reset']) * 1000)
     return `Rate limit exceeded. Resets at ${reset.toLocaleTimeString()}.`
   }
@@ -55,7 +58,8 @@ export function createClient(token: string): GitHub {
     auth: token,
     throttle: {
       // Primary limit: waiting for the hourly reset is worse than failing with a clear message.
-      onRateLimit: (retryAfter, _options, _octokit, retryCount) => retryCount < 1 && retryAfter <= 60,
+      onRateLimit: (retryAfter, _options, _octokit, retryCount) =>
+        retryCount < 1 && retryAfter <= 60,
       // Secondary limit: GitHub asks us to slow down, typically during bulk writes.
       onSecondaryRateLimit: (_retryAfter, _options, _octokit, retryCount) => retryCount < 3,
     },

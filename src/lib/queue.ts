@@ -1,4 +1,4 @@
-export type Settled<T> = { item: T; error: unknown | null }
+export type Settled<T> = { item: T; ok: true } | { item: T; ok: false; error: unknown }
 
 /** Runs `fn` over `items` with at most `concurrency` in flight, never rejecting. */
 export async function runQueue<T>(
@@ -13,13 +13,13 @@ export async function runQueue<T>(
   async function worker() {
     while (next < items.length) {
       const item = items[next++]
-      let error: unknown | null = null
+      let result: Settled<T>
       try {
         await fn(item)
-      } catch (err) {
-        error = err
+        result = { item, ok: true }
+      } catch (error) {
+        result = { item, ok: false, error }
       }
-      const result = { item, error }
       results.push(result)
       onSettled?.(result, results.length)
     }

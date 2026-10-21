@@ -6,7 +6,11 @@ import { confirmationFor, verb } from './useRepoActions'
 import { useRepoAction, type RepoAction } from './useRepos'
 
 export type BulkProgress = { action: RepoAction; total: number; done: number }
-export type BulkResult = { action: RepoAction; succeeded: number; failed: { repo: Repo; message: string }[] }
+export type BulkResult = {
+  action: RepoAction
+  succeeded: number
+  failed: { repo: Repo; message: string }[]
+}
 
 /** Repos the action would actually change; e.g. archiving skips repos that are already archived. */
 export function applicable(repos: Repo[], action: RepoAction): Repo[] {
@@ -32,7 +36,15 @@ export function useBulkActions() {
 
     const options = confirmationFor(targets, action) ?? {
       title: `${verb(action)[0].toUpperCase()}${verb(action).slice(1)} ${targets.length} repositories?`,
-      body: <p>{targets.map((r) => r.fullName).slice(0, 8).join(', ')}{targets.length > 8 && ` and ${targets.length - 8} more`}.</p>,
+      body: (
+        <p>
+          {targets
+            .map((r) => r.fullName)
+            .slice(0, 8)
+            .join(', ')}
+          {targets.length > 8 && ` and ${targets.length - 8} more`}.
+        </p>
+      ),
       confirmLabel: 'Continue',
     }
     if (!(await confirm(options))) return false
@@ -47,9 +59,11 @@ export function useBulkActions() {
       (_r, done) => setProgress({ action, total: targets.length, done }),
     )
     setProgress(null)
-    const failed = results
-      .filter((r) => r.error !== null)
-      .map((r) => ({ repo: r.item, message: r.error instanceof Error ? r.error.message : String(r.error) }))
+    const failed = results.flatMap((r) =>
+      r.ok
+        ? []
+        : [{ repo: r.item, message: r.error instanceof Error ? r.error.message : String(r.error) }],
+    )
     setResult({ action, succeeded: results.length - failed.length, failed })
     return true
   }

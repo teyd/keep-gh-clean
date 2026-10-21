@@ -61,8 +61,8 @@ export function confirmationFor(repos: Repo[], action: RepoAction): ConfirmOptio
       title: `Make ${subject} public?`,
       body: (
         <p>
-          Anyone on the internet will be able to see the code and its full commit history. Check
-          for secrets in the history first.
+          Anyone on the internet will be able to see the code and its full commit history. Check for
+          secrets in the history first.
         </p>
       ),
       confirmLabel: 'Make public',
@@ -100,12 +100,14 @@ export function useRepoActions() {
       const undo = undoable ? inverse(repo, action) : null
       toast({
         message: `${repo.fullName} ${describe(action)}.`,
-        action: undo ? { label: 'Undo', onClick: () => run(repo, undo, { undoable: false }) } : undefined,
+        action: undo
+          ? { label: 'Undo', onClick: () => run(repo, undo, { undoable: false }) }
+          : undefined,
       })
     } catch (err) {
       toast({
         tone: 'error',
-        message: `Couldn't ${verb(action)} ${repo.fullName}: ${err instanceof Error ? err.message : err}`,
+        message: `Couldn't ${verb(action)} ${repo.fullName}: ${err instanceof Error ? err.message : String(err)}`,
       })
     }
   }
