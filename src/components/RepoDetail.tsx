@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useContributors, useRepoDetail, type RepoAction } from '../hooks/useRepos'
 import type { Repo } from '../lib/queries'
 import { formatCount, formatSize, fullDate, relativeTime } from '../lib/format'
@@ -132,7 +133,8 @@ export function RepoDetail({
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
 
-  return (
+  // Portal out of the page layout so parent spacing utilities can't offset the fixed overlay.
+  return createPortal(
     <div className="fixed inset-0 z-40 flex justify-end" role="dialog" aria-label={repo.fullName}>
       <div className="absolute inset-0 bg-black/30" onClick={onClose} />
       <aside className="relative flex h-full w-full max-w-lg flex-col overflow-y-auto border-l border-zinc-200 bg-white shadow-xl dark:border-zinc-800 dark:bg-zinc-900">
@@ -166,6 +168,7 @@ export function RepoDetail({
           </Section>
         </div>
       </aside>
-    </div>
+    </div>,
+    document.body,
   )
 }
