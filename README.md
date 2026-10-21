@@ -2,6 +2,8 @@
 
 See all your GitHub repositories in one table, then change visibility, archive or delete them in one click or in bulk.
 
+**→ [teyd.github.io/keep-gh-clean](https://teyd.github.io/keep-gh-clean/)**
+
 - Lists your own repos plus org repos you're an admin of, with visibility, language, stars, forks, size, and created / last push / updated dates
 - Search, filter (owner, visibility, archived, fork, language) and sort on any column
 - Detail drawer: commit count, recent commits, top contributors, topics, license, open issues and PRs
