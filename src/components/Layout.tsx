@@ -25,7 +25,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   ].filter(Boolean)
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-7xl flex-col gap-4 p-6">
+    <div className="flex min-h-screen w-full flex-col gap-4 px-4 py-4 sm:px-6">
       <header className="flex items-center justify-between">
         <h1 className="text-xl font-semibold tracking-tight">keep-gh-clean</h1>
         <div className="flex items-center gap-3 text-sm">

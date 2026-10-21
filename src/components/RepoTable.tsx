@@ -122,7 +122,7 @@ export function RepoTable({
                   onChange={() => onToggle(repo.id)}
                 />
               </td>
-              <td className="max-w-md px-3 py-2">
+              <td className="max-w-[40vw] px-3 py-2">
                 <div className="flex items-center gap-2">
                   <img src={repo.ownerAvatar} alt="" className="size-5 rounded-full" />
                   <a
