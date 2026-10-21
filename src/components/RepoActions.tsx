@@ -5,7 +5,13 @@ import { useSession } from '../lib/session'
 const button =
   'rounded px-2 py-1 text-xs whitespace-nowrap hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-40 dark:hover:bg-zinc-800'
 
-export function RepoActions({ repo, onAction }: { repo: Repo; onAction: (repo: Repo, action: RepoAction) => void }) {
+export function RepoActions({
+  repo,
+  onAction,
+}: {
+  repo: Repo
+  onAction: (repo: Repo, action: RepoAction) => void
+}) {
   const { can } = useSession()
   // Internal (enterprise) repos go to private; the toggle is otherwise public ⇄ private.
   const nextVisibility = repo.visibility === 'PRIVATE' ? 'PUBLIC' : 'PRIVATE'

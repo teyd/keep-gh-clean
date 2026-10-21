@@ -3,14 +3,22 @@ import type { Repo } from '../lib/queries'
 import type { Sort, SortKey } from '../lib/filter'
 import { formatCount, formatSize, fullDate, relativeTime } from '../lib/format'
 
-export function Badge({ children, tone = 'zinc' }: { children: React.ReactNode; tone?: 'zinc' | 'amber' | 'green' }) {
+export function Badge({
+  children,
+  tone = 'zinc',
+}: {
+  children: React.ReactNode
+  tone?: 'zinc' | 'amber' | 'green'
+}) {
   const tones = {
     zinc: 'border-zinc-300 text-zinc-600 dark:border-zinc-700 dark:text-zinc-400',
     amber: 'border-amber-300 text-amber-700 dark:border-amber-800 dark:text-amber-400',
     green: 'border-emerald-300 text-emerald-700 dark:border-emerald-800 dark:text-emerald-400',
   }
   return (
-    <span className={`inline-block rounded-full border px-2 py-px text-xs whitespace-nowrap ${tones[tone]}`}>
+    <span
+      className={`inline-block rounded-full border px-2 py-px text-xs whitespace-nowrap ${tones[tone]}`}
+    >
       {children}
     </span>
   )
@@ -35,7 +43,10 @@ function SortHeader({
       className={`px-3 py-2 font-medium whitespace-nowrap ${align === 'right' ? 'text-right' : 'text-left'}`}
       aria-sort={active ? (sort.desc ? 'descending' : 'ascending') : 'none'}
     >
-      <button onClick={() => onSort(sortKey)} className="hover:text-zinc-900 dark:hover:text-zinc-100">
+      <button
+        onClick={() => onSort(sortKey)}
+        className="hover:text-zinc-900 dark:hover:text-zinc-100"
+      >
         {label}
         <span className={active ? '' : 'invisible'}>{sort.desc ? ' ↓' : ' ↑'}</span>
       </button>
@@ -45,7 +56,10 @@ function SortHeader({
 
 function DateCell({ iso }: { iso: string | null }) {
   return (
-    <td className="px-3 py-2 whitespace-nowrap text-zinc-600 dark:text-zinc-400" title={fullDate(iso)}>
+    <td
+      className="px-3 py-2 whitespace-nowrap text-zinc-600 dark:text-zinc-400"
+      title={fullDate(iso)}
+    >
       {relativeTime(iso)}
     </td>
   )
@@ -74,7 +88,8 @@ export function RepoTable({
   const selectedCount = repos.filter((r) => selected.has(r.id)).length
   const allRef = useRef<HTMLInputElement>(null)
   useEffect(() => {
-    if (allRef.current) allRef.current.indeterminate = selectedCount > 0 && selectedCount < repos.length
+    if (allRef.current)
+      allRef.current.indeterminate = selectedCount > 0 && selectedCount < repos.length
   }, [selectedCount, repos.length])
 
   return (
@@ -111,7 +126,9 @@ export function RepoTable({
               key={repo.id}
               onClick={() => onOpen(repo)}
               className={`cursor-pointer ${
-                selected.has(repo.id) ? 'bg-sky-50 dark:bg-sky-950/40' : 'hover:bg-zinc-50 dark:hover:bg-zinc-800/50'
+                selected.has(repo.id)
+                  ? 'bg-sky-50 dark:bg-sky-950/40'
+                  : 'hover:bg-zinc-50 dark:hover:bg-zinc-800/50'
               } ${repo.archived ? 'text-zinc-500' : ''}`}
             >
               <td className="py-2 pl-3" onClick={(e) => e.stopPropagation()}>
@@ -153,7 +170,10 @@ export function RepoTable({
               <td className="px-3 py-2 whitespace-nowrap">
                 {repo.language ? (
                   <span className="flex items-center gap-1.5">
-                    <span className="size-2.5 rounded-full" style={{ background: repo.languageColor ?? '#999' }} />
+                    <span
+                      className="size-2.5 rounded-full"
+                      style={{ background: repo.languageColor ?? '#999' }}
+                    />
                     {repo.language}
                   </span>
                 ) : (
@@ -162,7 +182,9 @@ export function RepoTable({
               </td>
               <td className="px-3 py-2 text-right tabular-nums">{formatCount(repo.stars)}</td>
               <td className="px-3 py-2 text-right tabular-nums">{formatCount(repo.forks)}</td>
-              <td className="px-3 py-2 text-right whitespace-nowrap tabular-nums">{formatSize(repo.sizeKb)}</td>
+              <td className="px-3 py-2 text-right whitespace-nowrap tabular-nums">
+                {formatSize(repo.sizeKb)}
+              </td>
               <DateCell iso={repo.createdAt} />
               <DateCell iso={repo.pushedAt} />
               <DateCell iso={repo.updatedAt} />
@@ -171,7 +193,9 @@ export function RepoTable({
           ))}
         </tbody>
       </table>
-      {repos.length === 0 && <p className="p-8 text-center text-sm text-zinc-500">No repositories match.</p>}
+      {repos.length === 0 && (
+        <p className="p-8 text-center text-sm text-zinc-500">No repositories match.</p>
+      )}
     </div>
   )
 }

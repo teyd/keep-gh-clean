@@ -92,7 +92,8 @@ export function useRepoAction() {
     onError: (_err, { repo, action }) => {
       queryClient.setQueryData<Repo[]>(key, (repos) => {
         if (!repos) return repos
-        if (action.type === 'delete') return repos.some((r) => r.id === repo.id) ? repos : [...repos, repo]
+        if (action.type === 'delete')
+          return repos.some((r) => r.id === repo.id) ? repos : [...repos, repo]
         return repos.map((r) => (r.id === repo.id ? repo : r))
       })
     },

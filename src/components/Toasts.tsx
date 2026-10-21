@@ -30,7 +30,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext value={push}>
       {children}
-      <div className="fixed right-4 bottom-4 z-50 flex w-96 max-w-[calc(100vw-2rem)] flex-col gap-2" aria-live="polite">
+      <div
+        className="fixed right-4 bottom-4 z-50 flex w-96 max-w-[calc(100vw-2rem)] flex-col gap-2"
+        aria-live="polite"
+      >
         {toasts.map((t) => (
           <div
             key={t.id}
@@ -52,7 +55,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                 {t.action.label}
               </button>
             )}
-            <button onClick={() => dismiss(t.id)} aria-label="Dismiss" className="text-zinc-400 hover:text-zinc-600">
+            <button
+              onClick={() => dismiss(t.id)}
+              aria-label="Dismiss"
+              className="text-zinc-400 hover:text-zinc-600"
+            >
               ✕
             </button>
           </div>

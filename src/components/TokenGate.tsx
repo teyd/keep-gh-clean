@@ -49,7 +49,11 @@ export function TokenGate({
           />
         </label>
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
+          <input
+            type="checkbox"
+            checked={remember}
+            onChange={(e) => setRemember(e.target.checked)}
+          />
           Remember on this device
         </label>
         {error && <p className="text-sm text-red-600">{error}</p>}

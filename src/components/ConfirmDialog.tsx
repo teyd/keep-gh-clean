@@ -54,7 +54,11 @@ export function ConfirmDialog({
           <div className="text-sm text-zinc-600 dark:text-zinc-400">{options.body}</div>
           {options.typeToConfirm && (
             <label className="block text-sm">
-              Type <code className="rounded bg-zinc-100 px-1 font-semibold dark:bg-zinc-800">{options.typeToConfirm}</code> to confirm
+              Type{' '}
+              <code className="rounded bg-zinc-100 px-1 font-semibold dark:bg-zinc-800">
+                {options.typeToConfirm}
+              </code>{' '}
+              to confirm
               <input
                 autoFocus
                 value={typed}
@@ -78,7 +82,9 @@ export function ConfirmDialog({
               autoFocus={!options.typeToConfirm}
               disabled={!ready}
               className={`rounded-md px-3 py-1.5 text-sm font-medium text-white disabled:opacity-40 ${
-                options.danger ? 'bg-red-600 hover:bg-red-700' : 'bg-zinc-900 hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900'
+                options.danger
+                  ? 'bg-red-600 hover:bg-red-700'
+                  : 'bg-zinc-900 hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900'
               }`}
             >
               {options.confirmLabel}
@@ -92,7 +98,10 @@ export function ConfirmDialog({
 
 /** Promise-based wrapper: `if (await confirm({...})) doIt()`. */
 export function useConfirm() {
-  const [state, setState] = useState<{ options: ConfirmOptions; resolve: (ok: boolean) => void } | null>(null)
+  const [state, setState] = useState<{
+    options: ConfirmOptions
+    resolve: (ok: boolean) => void
+  } | null>(null)
 
   const confirm = (options: ConfirmOptions) =>
     new Promise<boolean>((resolve) => setState({ options, resolve }))

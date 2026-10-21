@@ -32,7 +32,12 @@ export async function verifyToken(token: string): Promise<Session> {
   const { data, headers } = await gh.request('GET /user')
   const header = headers['x-oauth-scopes']
   const scopes =
-    header === undefined ? null : String(header).split(',').map((s) => s.trim()).filter(Boolean)
+    header === undefined
+      ? null
+      : String(header)
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
   return {
     token,
     gh,

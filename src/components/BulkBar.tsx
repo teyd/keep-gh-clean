@@ -28,7 +28,10 @@ export function BulkBar({
           Working… {progress.done}/{progress.total}
         </span>
         <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
-          <div className="h-full bg-zinc-900 transition-all dark:bg-zinc-100" style={{ width: `${pct}%` }} />
+          <div
+            className="h-full bg-zinc-900 transition-all dark:bg-zinc-100"
+            style={{ width: `${pct}%` }}
+          />
         </div>
       </div>
     )
@@ -37,8 +40,16 @@ export function BulkBar({
   if (selected.length === 0) return null
 
   const actions: { label: string; action: RepoAction; enabled: boolean; danger?: boolean }[] = [
-    { label: 'Make private', action: { type: 'visibility', visibility: 'PRIVATE' }, enabled: can.privateRepos },
-    { label: 'Make public', action: { type: 'visibility', visibility: 'PUBLIC' }, enabled: can.privateRepos },
+    {
+      label: 'Make private',
+      action: { type: 'visibility', visibility: 'PRIVATE' },
+      enabled: can.privateRepos,
+    },
+    {
+      label: 'Make public',
+      action: { type: 'visibility', visibility: 'PUBLIC' },
+      enabled: can.privateRepos,
+    },
     { label: 'Archive', action: { type: 'archive', archived: true }, enabled: can.admin },
     { label: 'Unarchive', action: { type: 'archive', archived: false }, enabled: can.admin },
     { label: 'Delete', action: { type: 'delete' }, enabled: can.delete, danger: true },
@@ -53,12 +64,18 @@ export function BulkBar({
           <button
             key={label}
             disabled={!enabled || count === 0}
-            title={count === 0 ? `All selected repos are already ${describe(action).replace(/^made /, '')}` : undefined}
+            title={
+              count === 0
+                ? `All selected repos are already ${describe(action).replace(/^made /, '')}`
+                : undefined
+            }
             onClick={() => onAction(action)}
             className={`${button} ${danger ? 'text-red-600 hover:bg-red-50 dark:hover:bg-red-950' : ''}`}
           >
             {label}
-            {count !== selected.length && count > 0 && <span className="ml-1 text-zinc-500">({count})</span>}
+            {count !== selected.length && count > 0 && (
+              <span className="ml-1 text-zinc-500">({count})</span>
+            )}
           </button>
         )
       })}
@@ -69,7 +86,13 @@ export function BulkBar({
   )
 }
 
-export function BulkResultBanner({ result, onDismiss }: { result: BulkResult; onDismiss: () => void }) {
+export function BulkResultBanner({
+  result,
+  onDismiss,
+}: {
+  result: BulkResult
+  onDismiss: () => void
+}) {
   const ok = result.failed.length === 0
   return (
     <div

@@ -37,7 +37,10 @@ const REPO_LIST = /* GraphQL */ `
         orderBy: { field: PUSHED_AT, direction: DESC }
       ) {
         totalCount
-        pageInfo { hasNextPage endCursor }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
         nodes {
           id
           name
@@ -55,10 +58,20 @@ const REPO_LIST = /* GraphQL */ `
           pushedAt
           updatedAt
           viewerPermission
-          owner { login avatarUrl }
-          parent { nameWithOwner }
-          primaryLanguage { name color }
-          defaultBranchRef { name }
+          owner {
+            login
+            avatarUrl
+          }
+          parent {
+            nameWithOwner
+          }
+          primaryLanguage {
+            name
+            color
+          }
+          defaultBranchRef {
+            name
+          }
         }
       }
     }
@@ -170,11 +183,26 @@ const REPO_DETAIL = /* GraphQL */ `
   query RepoDetail($owner: String!, $name: String!) {
     repository(owner: $owner, name: $name) {
       homepageUrl
-      licenseInfo { spdxId name }
-      watchers { totalCount }
-      issues(states: OPEN) { totalCount }
-      pullRequests(states: OPEN) { totalCount }
-      repositoryTopics(first: 20) { nodes { topic { name } } }
+      licenseInfo {
+        spdxId
+        name
+      }
+      watchers {
+        totalCount
+      }
+      issues(states: OPEN) {
+        totalCount
+      }
+      pullRequests(states: OPEN) {
+        totalCount
+      }
+      repositoryTopics(first: 20) {
+        nodes {
+          topic {
+            name
+          }
+        }
+      }
       defaultBranchRef {
         target {
           ... on Commit {
@@ -185,7 +213,13 @@ const REPO_DETAIL = /* GraphQL */ `
                 messageHeadline
                 committedDate
                 url
-                author { name user { login avatarUrl } }
+                author {
+                  name
+                  user {
+                    login
+                    avatarUrl
+                  }
+                }
               }
             }
           }
@@ -212,7 +246,10 @@ type RepoDetailResponse = {
             messageHeadline: string
             committedDate: string
             url: string
-            author: { name: string | null; user: { login: string; avatarUrl: string } | null } | null
+            author: {
+              name: string | null
+              user: { login: string; avatarUrl: string } | null
+            } | null
           }[]
         }
       }
@@ -220,7 +257,11 @@ type RepoDetailResponse = {
   }
 }
 
-export async function fetchRepoDetail(gh: GitHub, owner: string, name: string): Promise<RepoDetail> {
+export async function fetchRepoDetail(
+  gh: GitHub,
+  owner: string,
+  name: string,
+): Promise<RepoDetail> {
   const { repository: r } = await graphql<RepoDetailResponse>(gh, REPO_DETAIL, { owner, name })
   const history = r.defaultBranchRef?.target.history
   return {
@@ -255,7 +296,14 @@ export async function fetchContributors(gh: GitHub, repo: Repo): Promise<Contrib
     // Empty repositories respond with 204 and no body.
     return (Array.isArray(data) ? data : []).flatMap((c) =>
       c.login
-        ? [{ login: c.login, avatar: c.avatar_url ?? '', url: c.html_url ?? '', contributions: c.contributions }]
+        ? [
+            {
+              login: c.login,
+              avatar: c.avatar_url ?? '',
+              url: c.html_url ?? '',
+              contributions: c.contributions,
+            },
+          ]
         : [],
     )
   } catch (err) {

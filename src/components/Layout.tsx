@@ -29,11 +29,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <header className="flex items-center justify-between">
         <h1 className="text-xl font-semibold tracking-tight">keep-gh-clean</h1>
         <div className="flex items-center gap-3 text-sm">
-          <a href={viewer.url} target="_blank" rel="noreferrer" className="flex items-center gap-2 hover:underline">
+          <a
+            href={viewer.url}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-2 hover:underline"
+          >
             <img src={viewer.avatarUrl} alt="" className="size-6 rounded-full" />
             {viewer.login}
           </a>
-          <button onClick={signOut} className="text-zinc-500 underline hover:text-zinc-800 dark:hover:text-zinc-200">
+          <button
+            onClick={signOut}
+            className="text-zinc-500 underline hover:text-zinc-800 dark:hover:text-zinc-200"
+          >
             Sign out
           </button>
         </div>

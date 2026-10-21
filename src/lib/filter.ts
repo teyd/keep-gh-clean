@@ -33,8 +33,7 @@ export type SortKey =
 
 export type Sort = { key: SortKey; desc: boolean }
 
-const matchTri = (state: TriState, value: boolean) =>
-  state === 'all' || (state === 'yes') === value
+const matchTri = (state: TriState, value: boolean) => state === 'all' || (state === 'yes') === value
 
 export function filterRepos(repos: Repo[], f: Filters): Repo[] {
   const q = f.q.trim().toLowerCase()

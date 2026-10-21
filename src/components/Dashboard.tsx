@@ -2,7 +2,14 @@ import { useCallback, useMemo, useState } from 'react'
 import { useBulkActions } from '../hooks/useBulkActions'
 import { useRepoActions } from '../hooks/useRepoActions'
 import { useRepos } from '../hooks/useRepos'
-import { DEFAULT_FILTERS, defaultDesc, filterRepos, sortRepos, type Sort, type SortKey } from '../lib/filter'
+import {
+  DEFAULT_FILTERS,
+  defaultDesc,
+  filterRepos,
+  sortRepos,
+  type Sort,
+  type SortKey,
+} from '../lib/filter'
 import { BulkBar, BulkResultBanner } from './BulkBar'
 import { Filters } from './Filters'
 import { RepoActions } from './RepoActions'
@@ -31,7 +38,10 @@ export function Dashboard() {
     [repos, filters, sort],
   )
   // Bulk actions only touch selected repos that are currently visible, so a filter can't hide what you act on.
-  const selected = useMemo(() => visible.filter((r) => selectedIds.has(r.id)), [visible, selectedIds])
+  const selected = useMemo(
+    () => visible.filter((r) => selectedIds.has(r.id)),
+    [visible, selectedIds],
+  )
 
   function onSort(key: SortKey) {
     setSort((s) => (s.key === key ? { key, desc: !s.desc } : { key, desc: defaultDesc(key) }))
@@ -73,9 +83,16 @@ export function Dashboard() {
         <Filters filters={filters} onChange={setFilters} owners={owners} languages={languages} />
         <div className="flex items-center gap-3 text-sm text-zinc-500">
           <span>
-            {visible.length === repos.length ? repos.length : `${visible.length} of ${repos.length}`} repos
+            {visible.length === repos.length
+              ? repos.length
+              : `${visible.length} of ${repos.length}`}{' '}
+            repos
           </span>
-          <button onClick={() => refetch()} disabled={isFetching} className="underline disabled:opacity-50">
+          <button
+            onClick={() => refetch()}
+            disabled={isFetching}
+            className="underline disabled:opacity-50"
+          >
             {isFetching ? 'Refreshing…' : 'Refresh'}
           </button>
         </div>

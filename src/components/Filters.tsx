@@ -45,8 +45,10 @@ export function Filters({
   owners: string[]
   languages: string[]
 }) {
-  const set = <K extends keyof FilterState>(key: K) => (value: FilterState[K]) =>
-    onChange({ ...filters, [key]: value })
+  const set =
+    <K extends keyof FilterState>(key: K) =>
+    (value: FilterState[K]) =>
+      onChange({ ...filters, [key]: value })
   const dirty = JSON.stringify(filters) !== JSON.stringify(DEFAULT_FILTERS)
 
   return (

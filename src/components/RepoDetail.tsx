@@ -41,7 +41,12 @@ function Commits({ repo }: { repo: Repo }) {
             <span className="mt-0.5 size-5 rounded-full bg-zinc-200 dark:bg-zinc-700" />
           )}
           <div className="min-w-0">
-            <a href={c.url} target="_blank" rel="noreferrer" className="block truncate hover:underline">
+            <a
+              href={c.url}
+              target="_blank"
+              rel="noreferrer"
+              className="block truncate hover:underline"
+            >
               {c.message}
             </a>
             <p className="text-xs text-zinc-500" title={fullDate(c.date)}>
@@ -64,10 +69,17 @@ function Contributors({ repo }: { repo: Repo }) {
     <ul className="grid grid-cols-2 gap-2">
       {data.map((c) => (
         <li key={c.login}>
-          <a href={c.url} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm hover:underline">
+          <a
+            href={c.url}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-2 text-sm hover:underline"
+          >
             <img src={c.avatar} alt="" className="size-5 rounded-full" />
             <span className="truncate">{c.login}</span>
-            <span className="ml-auto text-xs text-zinc-500 tabular-nums">{formatCount(c.contributions)}</span>
+            <span className="ml-auto text-xs text-zinc-500 tabular-nums">
+              {formatCount(c.contributions)}
+            </span>
           </a>
         </li>
       ))}
@@ -87,7 +99,8 @@ function Overview({ repo }: { repo: Repo }) {
       <Field label="Commits">{data ? (data.commitCount?.toLocaleString() ?? '—') : loading}</Field>
       <Field label="Size">{formatSize(repo.sizeKb)}</Field>
       <Field label="Stars · Forks · Watchers">
-        {formatCount(repo.stars)} · {formatCount(repo.forks)} · {data ? formatCount(data.watchers) : loading}
+        {formatCount(repo.stars)} · {formatCount(repo.forks)} ·{' '}
+        {data ? formatCount(data.watchers) : loading}
       </Field>
       <Field label="Open issues · PRs">
         {data ? `${formatCount(data.openIssues)} · ${formatCount(data.openPullRequests)}` : loading}
@@ -141,21 +154,34 @@ export function RepoDetail({
         <header className="sticky top-0 space-y-2 border-b border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
           <div className="flex items-start gap-2">
             <img src={repo.ownerAvatar} alt="" className="mt-1 size-6 rounded-full" />
-            <a href={repo.url} target="_blank" rel="noreferrer" className="flex-1 text-lg font-semibold break-all hover:underline">
+            <a
+              href={repo.url}
+              target="_blank"
+              rel="noreferrer"
+              className="flex-1 text-lg font-semibold break-all hover:underline"
+            >
               {repo.fullName}
             </a>
-            <button onClick={onClose} aria-label="Close" className="text-zinc-400 hover:text-zinc-700">
+            <button
+              onClick={onClose}
+              aria-label="Close"
+              className="text-zinc-400 hover:text-zinc-700"
+            >
               ✕
             </button>
           </div>
           <div className="flex flex-wrap gap-1">
-            <Badge tone={repo.visibility === 'PUBLIC' ? 'green' : 'zinc'}>{repo.visibility.toLowerCase()}</Badge>
+            <Badge tone={repo.visibility === 'PUBLIC' ? 'green' : 'zinc'}>
+              {repo.visibility.toLowerCase()}
+            </Badge>
             {repo.archived && <Badge tone="amber">Archived</Badge>}
             {repo.fork && <Badge>{repo.parent ? `Fork of ${repo.parent}` : 'Fork'}</Badge>}
             {repo.template && <Badge>Template</Badge>}
             {repo.language && <Badge>{repo.language}</Badge>}
           </div>
-          {repo.description && <p className="text-sm text-zinc-600 dark:text-zinc-400">{repo.description}</p>}
+          {repo.description && (
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">{repo.description}</p>
+          )}
           <RepoActions repo={repo} onAction={onAction} />
         </header>
         <div className="space-y-6 p-5">
