@@ -1,4 +1,4 @@
-import { graphql, rest, GitHubError } from './github'
+import { graphql, RequestError, type GitHub } from './github'
 
 export type Visibility = 'PUBLIC' | 'PRIVATE' | 'INTERNAL'
 
@@ -123,11 +123,11 @@ function toRepo(n: RepoNode): Repo {
 }
 
 /** Every repo the viewer can administer: their own, plus org repos where they're an admin. */
-export async function fetchRepos(token: string): Promise<Repo[]> {
+export async function fetchRepos(gh: GitHub): Promise<Repo[]> {
   const repos: Repo[] = []
   let after: string | null = null
   do {
-    const data: RepoListResponse = await graphql<RepoListResponse>(token, REPO_LIST, { after })
+    const data: RepoListResponse = await graphql<RepoListResponse>(gh, REPO_LIST, { after })
     const page = data.viewer.repositories
     for (const node of page.nodes) {
       if (node && node.viewerPermission === 'ADMIN') repos.push(toRepo(node))
@@ -212,8 +212,8 @@ type RepoDetailResponse = {
   }
 }
 
-export async function fetchRepoDetail(token: string, owner: string, name: string): Promise<RepoDetail> {
-  const { repository: r } = await graphql<RepoDetailResponse>(token, REPO_DETAIL, { owner, name })
+export async function fetchRepoDetail(gh: GitHub, owner: string, name: string): Promise<RepoDetail> {
+  const { repository: r } = await graphql<RepoDetailResponse>(gh, REPO_DETAIL, { owner, name })
   const history = r.defaultBranchRef?.target.history
   return {
     commitCount: history?.totalCount ?? null,
@@ -237,35 +237,38 @@ export async function fetchRepoDetail(token: string, owner: string, name: string
 
 export type Contributor = { login: string; avatar: string; url: string; contributions: number }
 
-export async function fetchContributors(token: string, fullName: string): Promise<Contributor[]> {
+export async function fetchContributors(gh: GitHub, repo: Repo): Promise<Contributor[]> {
   try {
-    const { data } = await rest<
-      { login: string; avatar_url: string; html_url: string; contributions: number }[] | null
-    >(token, `/repos/${fullName}/contributors?per_page=10`)
-    return (data ?? []).map((c) => ({
-      login: c.login,
-      avatar: c.avatar_url,
-      url: c.html_url,
-      contributions: c.contributions,
-    }))
+    const { data } = await gh.request('GET /repos/{owner}/{repo}/contributors', {
+      owner: repo.owner,
+      repo: repo.name,
+      per_page: 10,
+    })
+    // Empty repositories respond with 204 and no body.
+    return (Array.isArray(data) ? data : []).flatMap((c) =>
+      c.login
+        ? [{ login: c.login, avatar: c.avatar_url ?? '', url: c.html_url ?? '', contributions: c.contributions }]
+        : [],
+    )
   } catch (err) {
     // GitHub refuses to compute contributors for very large repositories.
-    if (err instanceof GitHubError && err.status === 403) return []
+    if (err instanceof RequestError && err.status === 403) return []
     throw err
   }
 }
 
-export async function setVisibility(token: string, fullName: string, visibility: Visibility) {
-  await rest(token, `/repos/${fullName}`, {
-    method: 'PATCH',
-    body: { visibility: visibility.toLowerCase() },
+export async function setVisibility(gh: GitHub, repo: Repo, visibility: Visibility) {
+  await gh.request('PATCH /repos/{owner}/{repo}', {
+    owner: repo.owner,
+    repo: repo.name,
+    visibility: visibility === 'PUBLIC' ? 'public' : 'private',
   })
 }
 
-export async function setArchived(token: string, fullName: string, archived: boolean) {
-  await rest(token, `/repos/${fullName}`, { method: 'PATCH', body: { archived } })
+export async function setArchived(gh: GitHub, repo: Repo, archived: boolean) {
+  await gh.request('PATCH /repos/{owner}/{repo}', { owner: repo.owner, repo: repo.name, archived })
 }
 
-export async function deleteRepo(token: string, fullName: string) {
-  await rest(token, `/repos/${fullName}`, { method: 'DELETE' })
+export async function deleteRepo(gh: GitHub, repo: Repo) {
+  await gh.request('DELETE /repos/{owner}/{repo}', { owner: repo.owner, repo: repo.name })
 }

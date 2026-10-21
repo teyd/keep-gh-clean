@@ -1,4 +1,4 @@
-import { rest } from './github'
+import { createClient, type GitHub } from './github'
 
 const KEY = 'keep-gh-clean:token'
 
@@ -19,19 +19,26 @@ export function clearToken() {
   localStorage.removeItem(KEY)
 }
 
-export type Viewer = { login: string; avatar_url: string; html_url: string; name: string | null }
+export type Viewer = { login: string; avatarUrl: string; url: string; name: string | null }
 
 /**
  * `scopes` is null for fine-grained tokens, which don't report scopes; in that
  * case we allow every action and let the API reject what isn't permitted.
  */
-export type Session = { token: string; viewer: Viewer; scopes: string[] | null }
+export type Session = { token: string; gh: GitHub; viewer: Viewer; scopes: string[] | null }
 
 export async function verifyToken(token: string): Promise<Session> {
-  const { data, headers } = await rest<Viewer>(token, '/user')
-  const header = headers.get('x-oauth-scopes')
-  const scopes = header === null ? null : header.split(',').map((s) => s.trim()).filter(Boolean)
-  return { token, viewer: data, scopes }
+  const gh = createClient(token)
+  const { data, headers } = await gh.request('GET /user')
+  const header = headers['x-oauth-scopes']
+  const scopes =
+    header === undefined ? null : String(header).split(',').map((s) => s.trim()).filter(Boolean)
+  return {
+    token,
+    gh,
+    viewer: { login: data.login, avatarUrl: data.avatar_url, url: data.html_url, name: data.name },
+    scopes,
+  }
 }
 
 export type Capabilities = { privateRepos: boolean; admin: boolean; delete: boolean; orgs: boolean }

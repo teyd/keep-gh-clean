@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type { GitHub } from '../lib/github'
 import { useSession } from '../lib/session'
 import {
   deleteRepo,
@@ -16,27 +17,27 @@ export function reposKey(login: string) {
 }
 
 export function useRepos() {
-  const { token, viewer } = useSession()
+  const { gh, viewer } = useSession()
   return useQuery({
     queryKey: reposKey(viewer.login),
-    queryFn: () => fetchRepos(token),
+    queryFn: () => fetchRepos(gh),
     staleTime: 5 * 60_000,
   })
 }
 
 export function useRepoDetail(repo: Repo) {
-  const { token } = useSession()
+  const { gh } = useSession()
   return useQuery({
     queryKey: ['repo-detail', repo.fullName, repo.pushedAt],
-    queryFn: () => fetchRepoDetail(token, repo.owner, repo.name),
+    queryFn: () => fetchRepoDetail(gh, repo.owner, repo.name),
   })
 }
 
 export function useContributors(repo: Repo) {
-  const { token } = useSession()
+  const { gh } = useSession()
   return useQuery({
     queryKey: ['contributors', repo.fullName, repo.pushedAt],
-    queryFn: () => fetchContributors(token, repo.fullName),
+    queryFn: () => fetchContributors(gh, repo),
   })
 }
 
@@ -45,14 +46,14 @@ export type RepoAction =
   | { type: 'archive'; archived: boolean }
   | { type: 'delete' }
 
-export function runAction(token: string, repo: Repo, action: RepoAction) {
+export function runAction(gh: GitHub, repo: Repo, action: RepoAction) {
   switch (action.type) {
     case 'visibility':
-      return setVisibility(token, repo.fullName, action.visibility)
+      return setVisibility(gh, repo, action.visibility)
     case 'archive':
-      return setArchived(token, repo.fullName, action.archived)
+      return setArchived(gh, repo, action.archived)
     case 'delete':
-      return deleteRepo(token, repo.fullName)
+      return deleteRepo(gh, repo)
   }
 }
 
@@ -71,13 +72,13 @@ function applyAction(repos: Repo[], id: string, action: RepoAction): Repo[] {
  * back if the request fails, so concurrent bulk actions don't clobber each other.
  */
 export function useRepoAction() {
-  const { token, viewer } = useSession()
+  const { gh, viewer } = useSession()
   const queryClient = useQueryClient()
   const key = reposKey(viewer.login)
 
   return useMutation({
     mutationFn: ({ repo, action }: { repo: Repo; action: RepoAction }) =>
-      runAction(token, repo, action),
+      runAction(gh, repo, action),
     onMutate: async ({ repo, action }) => {
       await queryClient.cancelQueries({ queryKey: key })
       queryClient.setQueryData<Repo[]>(key, (repos) => repos && applyAction(repos, repo.id, action))
