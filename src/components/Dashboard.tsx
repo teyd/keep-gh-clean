@@ -1,7 +1,9 @@
 import { useCallback, useMemo, useState } from 'react'
+import { useBulkActions } from '../hooks/useBulkActions'
 import { useRepoActions } from '../hooks/useRepoActions'
 import { useRepos } from '../hooks/useRepos'
 import { DEFAULT_FILTERS, defaultDesc, filterRepos, sortRepos, type Sort, type SortKey } from '../lib/filter'
+import { BulkBar, BulkResultBanner } from './BulkBar'
 import { Filters } from './Filters'
 import { RepoActions } from './RepoActions'
 import { RepoDetail } from './RepoDetail'
@@ -10,8 +12,10 @@ import { RepoTable } from './RepoTable'
 export function Dashboard() {
   const { data: repos, isPending, error, refetch, isFetching } = useRepos()
   const { perform, dialog } = useRepoActions()
+  const bulk = useBulkActions()
   const [filters, setFilters] = useState(DEFAULT_FILTERS)
   const [sort, setSort] = useState<Sort>({ key: 'pushedAt', desc: true })
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [openId, setOpenId] = useState<string | null>(null)
   // Looked up from the live list so the drawer reflects actions and closes when the repo is deleted.
   const openRepo = repos?.find((r) => r.id === openId)
@@ -26,9 +30,23 @@ export function Dashboard() {
     () => sortRepos(filterRepos(repos ?? [], filters), sort),
     [repos, filters, sort],
   )
+  // Bulk actions only touch selected repos that are currently visible, so a filter can't hide what you act on.
+  const selected = useMemo(() => visible.filter((r) => selectedIds.has(r.id)), [visible, selectedIds])
 
   function onSort(key: SortKey) {
     setSort((s) => (s.key === key ? { key, desc: !s.desc } : { key, desc: defaultDesc(key) }))
+  }
+
+  function toggle(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (!next.delete(id)) next.add(id)
+      return next
+    })
+  }
+
+  function toggleAll(checked: boolean) {
+    setSelectedIds(checked ? new Set(visible.map((r) => r.id)) : new Set())
   }
 
   if (isPending) return <p className="py-12 text-center text-sm text-zinc-500">Loading repositories…</p>
@@ -56,15 +74,30 @@ export function Dashboard() {
           </button>
         </div>
       </div>
+
+      <BulkBar
+        selected={selected}
+        progress={bulk.progress}
+        onAction={async (action) => {
+          if (await bulk.runBulk(selected, action)) setSelectedIds(new Set())
+        }}
+        onClear={() => setSelectedIds(new Set())}
+      />
+      {bulk.result && <BulkResultBanner result={bulk.result} onDismiss={bulk.clearResult} />}
+
       <RepoTable
         repos={visible}
         sort={sort}
         onSort={onSort}
         renderActions={(repo) => <RepoActions repo={repo} onAction={perform} />}
         onOpen={(repo) => setOpenId(repo.id)}
+        selected={selectedIds}
+        onToggle={toggle}
+        onToggleAll={toggleAll}
       />
       {openRepo && <RepoDetail repo={openRepo} onClose={closeDetail} onAction={perform} />}
       {dialog}
+      {bulk.dialog}
     </div>
   )
 }

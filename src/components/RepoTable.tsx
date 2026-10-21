@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import type { Repo } from '../lib/queries'
 import type { Sort, SortKey } from '../lib/filter'
 import { formatCount, formatSize, fullDate, relativeTime } from '../lib/format'
@@ -56,19 +57,40 @@ export function RepoTable({
   onSort,
   renderActions,
   onOpen,
+  selected,
+  onToggle,
+  onToggleAll,
 }: {
   repos: Repo[]
   sort: Sort
   onSort: (key: SortKey) => void
   renderActions: (repo: Repo) => React.ReactNode
   onOpen: (repo: Repo) => void
+  selected: Set<string>
+  onToggle: (id: string) => void
+  onToggleAll: (checked: boolean) => void
 }) {
   const header = { sort, onSort }
+  const selectedCount = repos.filter((r) => selected.has(r.id)).length
+  const allRef = useRef<HTMLInputElement>(null)
+  useEffect(() => {
+    if (allRef.current) allRef.current.indeterminate = selectedCount > 0 && selectedCount < repos.length
+  }, [selectedCount, repos.length])
+
   return (
     <div className="overflow-x-auto rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
       <table className="w-full text-sm">
         <thead className="border-b border-zinc-200 text-zinc-500 dark:border-zinc-800">
           <tr>
+            <th className="w-8 py-2 pl-3">
+              <input
+                ref={allRef}
+                type="checkbox"
+                aria-label="Select all"
+                checked={repos.length > 0 && selectedCount === repos.length}
+                onChange={(e) => onToggleAll(e.target.checked)}
+              />
+            </th>
             <SortHeader label="Repository" sortKey="name" {...header} />
             <SortHeader label="Visibility" sortKey="visibility" {...header} />
             <SortHeader label="Language" sortKey="language" {...header} />
@@ -88,8 +110,18 @@ export function RepoTable({
             <tr
               key={repo.id}
               onClick={() => onOpen(repo)}
-              className={`cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 ${repo.archived ? 'opacity-60' : ''}`}
+              className={`cursor-pointer ${
+                selected.has(repo.id) ? 'bg-sky-50 dark:bg-sky-950/40' : 'hover:bg-zinc-50 dark:hover:bg-zinc-800/50'
+              } ${repo.archived ? 'text-zinc-500' : ''}`}
             >
+              <td className="py-2 pl-3" onClick={(e) => e.stopPropagation()}>
+                <input
+                  type="checkbox"
+                  aria-label={`Select ${repo.fullName}`}
+                  checked={selected.has(repo.id)}
+                  onChange={() => onToggle(repo.id)}
+                />
+              </td>
               <td className="max-w-md px-3 py-2">
                 <div className="flex items-center gap-2">
                   <img src={repo.ownerAvatar} alt="" className="size-5 rounded-full" />
